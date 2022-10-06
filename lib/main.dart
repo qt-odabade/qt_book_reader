@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:qt_book_reader/view/library_view.dart';
 
-void main() {
+import 'database/database.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Database.instance.init();
+
   runApp(const BookReader());
 }
 
 class BookReader extends StatelessWidget {
   const BookReader({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
