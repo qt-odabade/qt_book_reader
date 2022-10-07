@@ -1,5 +1,7 @@
 import 'package:objectbox/objectbox.dart';
 
+enum BookType { pdf, epub }
+
 @Entity()
 class Book {
   int id;
