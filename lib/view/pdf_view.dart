@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:pdfx/pdfx.dart';
 import 'package:http/http.dart' as http;
+import 'package:qt_book_reader/database/database.dart';
 import 'package:qt_book_reader/model/book.dart';
 
 class PDFView extends StatefulWidget {
@@ -20,14 +21,22 @@ class _PDFViewState extends State<PDFView> {
 
   FutureOr<Uint8List> loadInternetPdf({required String url}) async {
     final res = await http.get(Uri.parse(url));
+    Database.instance.saveBook(book: widget.book, fileData: res.bodyBytes);
     return res.bodyBytes;
   }
 
   @override
   void initState() {
-    _pdfController = PdfController(
-        document: PdfDocument.openData(
-            loadInternetPdf(url: widget.book.downloadUrl)));
+    if (widget.book.filePath != null) {
+      _pdfController =
+          PdfController(document: PdfDocument.openFile(widget.book.filePath!));
+    } else {
+      _pdfController = PdfController(
+        document:
+            PdfDocument.openData(loadInternetPdf(url: widget.book.downloadUrl)),
+      );
+    }
+
     super.initState();
   }
 

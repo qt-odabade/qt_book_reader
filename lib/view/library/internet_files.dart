@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:qt_book_reader/app/constants.dart';
-import 'package:qt_book_reader/view/widget/book_card.dart';
 
-class LibraryView extends StatefulWidget {
-  const LibraryView({super.key});
+import '../../app/constants.dart';
+import '../widget/book_card.dart';
+
+class InternetFiles extends StatefulWidget {
+  const InternetFiles({super.key});
 
   @override
-  State<LibraryView> createState() => _LibraryViewState();
+  State<InternetFiles> createState() => _InternetFilesState();
 }
 
-class _LibraryViewState extends State<LibraryView> {
+class _InternetFilesState extends State<InternetFiles> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

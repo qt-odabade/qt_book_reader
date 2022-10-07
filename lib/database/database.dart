@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:qt_book_reader/model/book.dart';
 
 import '../objectbox.g.dart';
@@ -18,7 +22,28 @@ class Database {
 
   List<Book> get books => _box.getAll();
 
-  Future<void> saveBook({required Book book}) async {
+  //TODO: Avoid duplicacy
+  Future<void> saveBook(
+      {required Book book, required Uint8List fileData}) async {
+    if (books.contains(book)) {
+      return;
+    }
+
+    final docsPath = await getApplicationDocumentsDirectory();
+
+    Directory filesDirectory = Directory("${docsPath.path}/Files");
+    if (!(await filesDirectory.exists())) {
+      filesDirectory = await filesDirectory.create(recursive: true);
+    }
+
+    File file = File("${filesDirectory.path}/${book.title}.pdf");
+
+    if (!(await file.exists())) {
+      file = await file.writeAsBytes(fileData);
+    }
+
+    book.filePath = file.path;
+
     await _box.putAsync(book);
   }
 }
