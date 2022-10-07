@@ -36,7 +36,8 @@ class Database {
       filesDirectory = await filesDirectory.create(recursive: true);
     }
 
-    File file = File("${filesDirectory.path}/${book.title}.pdf");
+    File file =
+        File("${filesDirectory.path}/${book.title}.${book.fileExtension}");
 
     if (!(await file.exists())) {
       file = await file.writeAsBytes(fileData);

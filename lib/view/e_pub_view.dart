@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:qt_book_reader/model/book.dart';
 import 'package:http/http.dart' as http;
 
+import '../service/database.dart';
+
 class EPubView extends StatefulWidget {
   final Book book;
 
@@ -20,9 +22,9 @@ class _EPubViewState extends State<EPubView> {
   late EpubController _epubController;
   bool _isLoading = true;
 
-  FutureOr<Uint8List> loadInternetPdf({required String url}) async {
+  FutureOr<Uint8List> loadInternetEPub({required String url}) async {
     final res = await http.get(Uri.parse(url));
-    // Database.instance.saveBook(book: widget.book, fileData: res.bodyBytes);
+    Database.instance.saveBook(book: widget.book, fileData: res.bodyBytes);
     return res.bodyBytes;
   }
 
@@ -34,9 +36,7 @@ class _EPubViewState extends State<EPubView> {
       _epubController = EpubController(
         // Load document
         document: EpubDocument.openData(
-          await loadInternetPdf(
-              url:
-                  'https://github.com/qt-odabade/qt_book_reader/raw/master/assets/book.epub'),
+          await loadInternetEPub(url: widget.book.downloadUrl),
         ),
       );
     }

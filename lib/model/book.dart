@@ -11,6 +11,11 @@ class Book {
   String? filePath;
   final String? thumbnail;
 
+  bool get isPDF => downloadUrl.endsWith('.pdf');
+  bool get isEPub => downloadUrl.endsWith('.epub');
+
+  String get fileExtension => downloadUrl.split('.').last;
+
   Book({
     this.id = 0,
     required this.title,
