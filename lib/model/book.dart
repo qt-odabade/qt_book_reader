@@ -13,6 +13,7 @@ class Book {
 
   bool get isPDF => downloadUrl.endsWith('.pdf');
   bool get isEPub => downloadUrl.endsWith('.epub');
+  bool get isTxt => downloadUrl.endsWith('.txt');
 
   String get fileExtension => downloadUrl.split('.').last;
 

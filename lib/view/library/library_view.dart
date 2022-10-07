@@ -29,11 +29,11 @@ class _LibraryViewState extends State<LibraryView> {
         },
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.book_online),
+            icon: Icon(Icons.book_rounded),
             label: 'Library',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.airplanemode_inactive_rounded),
+            icon: Icon(Icons.download_done_rounded),
             label: 'Offline',
           ),
         ],

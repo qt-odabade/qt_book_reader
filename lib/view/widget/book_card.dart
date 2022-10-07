@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:qt_book_reader/model/book.dart';
 import 'package:qt_book_reader/view/e_pub_view.dart';
 import 'package:qt_book_reader/view/pdf_view.dart';
+import 'package:qt_book_reader/view/txt_view.dart';
 
 class BookCard extends StatelessWidget {
   final Book book;
@@ -15,8 +16,11 @@ class BookCard extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) =>
-                  book.isPDF ? PDFView(book: book) : EPubView(book: book),
+              builder: (context) => book.isPDF
+                  ? PDFView(book: book)
+                  : book.isEPub
+                      ? EPubView(book: book)
+                      : TextView(book: book),
             ),
           );
         },
@@ -32,12 +36,20 @@ class BookCard extends StatelessWidget {
                         color: Colors.red.shade400,
                         size: 48.0,
                       )
-                    : const Icon(
-                        Icons.text_snippet_rounded,
-                        size: 48.0,
-                      ),
+                    : book.isEPub
+                        ? const Icon(
+                            Icons.text_snippet_rounded,
+                            size: 48.0,
+                          )
+                        : const Icon(
+                            Icons.text_fields_rounded,
+                            size: 48,
+                          ),
               ),
-              Text(book.title),
+              Text(
+                book.title,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
             ],
           ),
         ),
