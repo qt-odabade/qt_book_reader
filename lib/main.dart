@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:qt_book_reader/view/library/library_view.dart';
 
-import 'database/database.dart';
+import 'service/database.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

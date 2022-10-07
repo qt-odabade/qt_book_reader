@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:qt_book_reader/database/database.dart';
+import 'package:qt_book_reader/service/database.dart';
 
 import '../widget/book_card.dart';
 

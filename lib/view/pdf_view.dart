@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:pdfx/pdfx.dart';
 import 'package:http/http.dart' as http;
-import 'package:qt_book_reader/database/database.dart';
+import 'package:qt_book_reader/service/database.dart';
 import 'package:qt_book_reader/model/book.dart';
 
 class PDFView extends StatefulWidget {
