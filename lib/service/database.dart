@@ -22,10 +22,15 @@ class Database {
 
   List<Book> get books => _box.getAll();
 
-  //TODO: Avoid duplicacy
   Future<void> saveBook(
       {required Book book, required Uint8List fileData}) async {
-    if (books.contains(book)) {
+    // Check if file with same title and download link exists
+    // If exists then do not save file
+    if (books
+        .where((element) =>
+            element.title == book.title &&
+            element.downloadUrl == book.downloadUrl)
+        .isNotEmpty) {
       return;
     }
 
