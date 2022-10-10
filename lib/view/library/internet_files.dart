@@ -12,8 +12,6 @@ class InternetFiles extends StatefulWidget {
 }
 
 class _InternetFilesState extends State<InternetFiles> {
-  List<Book>? initBooks;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,7 +20,6 @@ class _InternetFilesState extends State<InternetFiles> {
       ),
       body: FutureBuilder<List<Book>>(
         future: Constants.books(),
-        initialData: initBooks,
         builder: (context, snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.none:
@@ -36,8 +33,6 @@ class _InternetFilesState extends State<InternetFiles> {
                   child: Text('No books found'),
                 );
               }
-
-              initBooks = snapshot.data;
 
               return GridView.builder(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
