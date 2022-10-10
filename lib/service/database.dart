@@ -1,10 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:qt_book_reader/model/book.dart';
-
-import '../objectbox.g.dart';
 
 class Database {
   static final Database _database = Database._internal();
@@ -16,24 +15,16 @@ class Database {
   late Box<Book> _box;
 
   Future<void> init() async {
-    final store = await openStore();
-    _box = store.box<Book>();
+    await Hive.initFlutter();
+    Hive.registerAdapter<Book>(BookAdapter());
+
+    _box = await Hive.openBox<Book>('book-store');
   }
 
-  List<Book> get books => _box.getAll();
+  List<Book> get books => _box.values.toList();
 
   Future<void> saveBook(
       {required Book book, required Uint8List fileData}) async {
-    // Check if file with same title and download link exists
-    // If exists then do not save file
-    if (books
-        .where((element) =>
-            element.title == book.title &&
-            element.downloadUrl == book.downloadUrl)
-        .isNotEmpty) {
-      return;
-    }
-
     final docsPath = await getApplicationDocumentsDirectory();
 
     Directory filesDirectory = Directory("${docsPath.path}/Files");
@@ -50,6 +41,10 @@ class Database {
 
     book.filePath = file.path;
 
-    await _box.putAsync(book);
+    await _box.put(book.id, book);
+  }
+
+  Future<void> updateBook({required Book book}) async {
+    await _box.put(book.id, book);
   }
 }

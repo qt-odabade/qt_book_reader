@@ -1,40 +1,29 @@
-import 'dart:math';
-
 import 'package:qt_book_reader/model/book.dart';
 
 class Constants {
-  static List<Book> books = List.generate(11, (index) {
-    final link = randomDownloadUrl();
+  static Future<List<Book>> books() async {
+    List<Book> data = [];
 
-    return Book(
-      title: link.split('/').last,
-      downloadUrl: link,
-    );
-  });
+    for (int i = 0; i < downloadUrls.length; i++) {
+      data.add(Book(
+        id: i,
+        title: downloadUrls[i].split('/').last,
+        downloadUrl: downloadUrls[i],
+      ));
+    }
 
-  static List<String> pdfDownloadUrls = [
+    await Future.delayed(const Duration(seconds: 1));
+
+    return data;
+  }
+
+  static List<String> downloadUrls = [
     'https://www.africau.edu/images/default/sample.pdf',
     'https://github.com/qt-odabade/qt_book_reader/raw/master/assets/test.pdf',
-  ];
-  static List<String> ePubDownloadUrls = [
     'https://github.com/qt-odabade/qt_book_reader/raw/master/assets/test.epub',
-    'https://github.com/qt-odabade/qt_book_reader/raw/master/assets/test_2.epub'
-  ];
-  static List<String> txtDownloadUrls = [
+    'https://github.com/qt-odabade/qt_book_reader/raw/master/assets/test_2.epub',
+    'https://github.com/qt-odabade/qt_book_reader/raw/master/assets/test_3.epub',
     'https://github.com/qt-odabade/qt_book_reader/raw/master/assets/test.txt',
     'https://github.com/qt-odabade/qt_book_reader/raw/master/assets/test_2.txt'
   ];
-
-  static String randomDownloadUrl() {
-    switch (Random().nextInt(3)) {
-      case 0:
-        return pdfDownloadUrls[Random().nextInt(pdfDownloadUrls.length)];
-      case 1:
-        return ePubDownloadUrls[Random().nextInt(ePubDownloadUrls.length)];
-      case 2:
-        return txtDownloadUrls[Random().nextInt(ePubDownloadUrls.length)];
-      default:
-        return pdfDownloadUrls[Random().nextInt(pdfDownloadUrls.length)];
-    }
-  }
 }

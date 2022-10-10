@@ -16,7 +16,15 @@ class TextView extends StatefulWidget {
 }
 
 class _TextViewState extends State<TextView> {
+  late final ScrollController _scrollController;
+
   Future<String> loadText() async {
+    _scrollController = ScrollController(
+      initialScrollOffset: double.tryParse(widget.book.progress ?? '') != null
+          ? double.parse(widget.book.progress!)
+          : 0,
+    );
+
     if (widget.book.filePath != null) {
       return await File(widget.book.filePath!).readAsString();
     } else {
@@ -28,32 +36,40 @@ class _TextViewState extends State<TextView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.book.title),
-      ),
-      body: FutureBuilder<String>(
-        future: loadText(),
-        builder: (context, snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.none:
-            case ConnectionState.waiting:
-            case ConnectionState.active:
-              return const Center(child: CircularProgressIndicator());
+    return WillPopScope(
+      onWillPop: () async {
+        widget.book.progress = _scrollController.offset.toString();
+        Database.instance.updateBook(book: widget.book);
+        return true;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(widget.book.title),
+        ),
+        body: FutureBuilder<String>(
+          future: loadText(),
+          builder: (context, snapshot) {
+            switch (snapshot.connectionState) {
+              case ConnectionState.none:
+              case ConnectionState.waiting:
+              case ConnectionState.active:
+                return const Center(child: CircularProgressIndicator());
 
-            case ConnectionState.done:
-              if (snapshot.data?.isEmpty ?? true) {
-                return const Center(
-                  child: Text('No text found'),
+              case ConnectionState.done:
+                if (snapshot.data?.isEmpty ?? true) {
+                  return const Center(
+                    child: Text('No text found'),
+                  );
+                }
+
+                return SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                  controller: _scrollController,
+                  child: Text(snapshot.data ?? ''),
                 );
-              }
-
-              return SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                child: Text(snapshot.data ?? ''),
-              );
-          }
-        },
+            }
+          },
+        ),
       ),
     );
   }

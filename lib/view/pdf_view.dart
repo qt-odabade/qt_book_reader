@@ -28,8 +28,12 @@ class _PDFViewState extends State<PDFView> {
   @override
   void initState() {
     if (widget.book.filePath != null) {
-      _pdfController =
-          PdfController(document: PdfDocument.openFile(widget.book.filePath!));
+      _pdfController = PdfController(
+        document: PdfDocument.openFile(widget.book.filePath!),
+        initialPage: int.tryParse(widget.book.progress ?? '') != null
+            ? int.parse(widget.book.progress!)
+            : 1,
+      );
     } else {
       _pdfController = PdfController(
         document:
@@ -42,18 +46,25 @@ class _PDFViewState extends State<PDFView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.book.title),
-      ),
-      body: PdfView(
-        controller: _pdfController,
-        builders: PdfViewBuilders<DefaultBuilderOptions>(
-          options: const DefaultBuilderOptions(),
-          documentLoaderBuilder: (_) =>
-              const Center(child: CircularProgressIndicator()),
-          pageLoaderBuilder: (_) =>
-              const Center(child: CircularProgressIndicator()),
+    return WillPopScope(
+      onWillPop: () async {
+        widget.book.progress = _pdfController.page.toString();
+        Database.instance.updateBook(book: widget.book);
+        return true;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(widget.book.title),
+        ),
+        body: PdfView(
+          controller: _pdfController,
+          builders: PdfViewBuilders<DefaultBuilderOptions>(
+            options: const DefaultBuilderOptions(),
+            documentLoaderBuilder: (_) =>
+                const Center(child: CircularProgressIndicator()),
+            pageLoaderBuilder: (_) =>
+                const Center(child: CircularProgressIndicator()),
+          ),
         ),
       ),
     );

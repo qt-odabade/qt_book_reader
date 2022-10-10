@@ -31,7 +31,9 @@ class _EPubViewState extends State<EPubView> {
   Future<void> loadFile() async {
     if (widget.book.filePath != null) {
       _epubController = EpubController(
-          document: EpubDocument.openFile(File(widget.book.filePath!)));
+        document: EpubDocument.openFile(File(widget.book.filePath!)),
+        epubCfi: widget.book.progress,
+      );
     } else {
       _epubController = EpubController(
         // Load document
@@ -54,38 +56,48 @@ class _EPubViewState extends State<EPubView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: _isLoading
-          ? null
-          : AppBar(
-              // Show actual chapter name
-              title: EpubViewActualChapter(
-                controller: _epubController,
-                builder: (chapterValue) => Text(
-                  'Chapter: ${chapterValue?.chapter?.Title?.replaceAll('\n', '').trim() ?? ''}',
-                  textAlign: TextAlign.start,
+    return WillPopScope(
+      onWillPop: () async {
+        // Save here
+        widget.book.progress = _epubController.generateEpubCfi();
+        Database.instance.updateBook(book: widget.book);
+        print('EPUB Progress');
+        print(widget.book.progress);
+        return true;
+      },
+      child: Scaffold(
+        appBar: _isLoading
+            ? null
+            : AppBar(
+                // Show actual chapter name
+                title: EpubViewActualChapter(
+                  controller: _epubController,
+                  builder: (chapterValue) => Text(
+                    'Chapter: ${chapterValue?.chapter?.Title?.replaceAll('\n', '').trim() ?? ''}',
+                    textAlign: TextAlign.start,
+                  ),
                 ),
               ),
-            ),
-      // Show table of contents
-      drawer: _isLoading
-          ? null
-          : Drawer(
-              child: EpubViewTableOfContents(
+        // Show table of contents
+        drawer: _isLoading
+            ? null
+            : Drawer(
+                child: EpubViewTableOfContents(
+                  controller: _epubController,
+                ),
+              ),
+        // Show epub document
+        body: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : EpubView(
                 controller: _epubController,
+                builders: EpubViewBuilders<DefaultBuilderOptions>(
+                  options: const DefaultBuilderOptions(),
+                  loaderBuilder: (_) =>
+                      const Center(child: CircularProgressIndicator()),
+                ),
               ),
-            ),
-      // Show epub document
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : EpubView(
-              controller: _epubController,
-              builders: EpubViewBuilders<DefaultBuilderOptions>(
-                options: const DefaultBuilderOptions(),
-                loaderBuilder: (_) =>
-                    const Center(child: CircularProgressIndicator()),
-              ),
-            ),
+      ),
     );
   }
 }

@@ -1,15 +1,31 @@
-import 'package:objectbox/objectbox.dart';
+import 'package:hive/hive.dart';
 
-enum BookType { pdf, epub }
+part 'book.g.dart';
 
-@Entity()
-class Book {
-  int id;
+@HiveType(typeId: 0)
+class Book extends HiveObject {
+  @HiveField(0)
+  final int id;
 
+  @HiveField(1)
   final String title;
+
+  @HiveField(2)
   final String downloadUrl;
+
+  @HiveField(3)
   String? filePath;
-  final String? thumbnail;
+
+  @HiveField(4)
+  String? thumbnail;
+
+  /// PDF: Page no(`int`)
+  ///
+  /// TXT: scroll position(`double`)
+  ///
+  /// EPUB: epubcfi(/6/6[chapter-2]!/4/2/1612)(`String`)
+  @HiveField(5)
+  String? progress;
 
   bool get isPDF => downloadUrl.endsWith('.pdf');
   bool get isEPub => downloadUrl.endsWith('.epub');
@@ -18,11 +34,12 @@ class Book {
   String get fileExtension => downloadUrl.split('.').last;
 
   Book({
-    this.id = 0,
+    required this.id,
     required this.title,
     required this.downloadUrl,
     this.filePath,
     this.thumbnail,
+    this.progress,
   });
 
   @override
