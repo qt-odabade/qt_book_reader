@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -6,6 +7,8 @@ import 'package:pdfx/pdfx.dart';
 import 'package:http/http.dart' as http;
 import 'package:qt_book_reader/service/database.dart';
 import 'package:qt_book_reader/model/book.dart';
+
+import '../service/encrypter.dart';
 
 class PDFView extends StatefulWidget {
   final Book book;
@@ -21,15 +24,23 @@ class _PDFViewState extends State<PDFView> {
 
   FutureOr<Uint8List> loadInternetPdf({required String url}) async {
     final res = await http.get(Uri.parse(url));
-    Database.instance.saveBook(book: widget.book, fileData: res.bodyBytes);
+    Database.instance.saveFile(book: widget.book, fileData: res.bodyBytes);
     return res.bodyBytes;
+  }
+
+  Future<Uint8List> decryptFile(String filePath) async {
+    File file = File(filePath);
+    List<int> decryptedData = EncryptService.instance
+        .decryptBytes(encryptedBytes: await file.readAsBytes());
+
+    return Uint8List.fromList(decryptedData);
   }
 
   @override
   void initState() {
     if (widget.book.filePath != null) {
       _pdfController = PdfController(
-        document: PdfDocument.openFile(widget.book.filePath!),
+        document: PdfDocument.openData(decryptFile(widget.book.filePath!)),
         initialPage: int.tryParse(widget.book.progress ?? '') != null
             ? int.parse(widget.book.progress!)
             : 1,

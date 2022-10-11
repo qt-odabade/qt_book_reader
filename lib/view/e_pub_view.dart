@@ -6,6 +6,7 @@ import 'package:epub_view/epub_view.dart';
 import 'package:flutter/material.dart';
 import 'package:qt_book_reader/model/book.dart';
 import 'package:http/http.dart' as http;
+import 'package:qt_book_reader/service/encrypter.dart';
 
 import '../service/database.dart';
 
@@ -24,14 +25,18 @@ class _EPubViewState extends State<EPubView> {
 
   FutureOr<Uint8List> loadInternetEPub({required String url}) async {
     final res = await http.get(Uri.parse(url));
-    Database.instance.saveBook(book: widget.book, fileData: res.bodyBytes);
+    Database.instance.saveFile(book: widget.book, fileData: res.bodyBytes);
     return res.bodyBytes;
   }
 
   Future<void> loadFile() async {
     if (widget.book.filePath != null) {
+      File file = File(widget.book.filePath!);
+      List<int> decryptedData = EncryptService.instance
+          .decryptBytes(encryptedBytes: await file.readAsBytes());
+
       _epubController = EpubController(
-        document: EpubDocument.openFile(File(widget.book.filePath!)),
+        document: EpubDocument.openData(Uint8List.fromList(decryptedData)),
         epubCfi: widget.book.progress,
       );
     } else {

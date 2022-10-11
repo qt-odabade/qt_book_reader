@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:qt_book_reader/service/encrypter.dart';
 import 'package:qt_book_reader/view/library/library_view.dart';
 
 import 'service/database.dart';
@@ -7,6 +8,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Database.instance.init();
+  EncryptService.instance.init();
 
   runApp(const BookReader());
 }

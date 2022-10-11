@@ -6,6 +6,8 @@ import 'package:http/http.dart' as http;
 import 'package:qt_book_reader/service/database.dart';
 import 'package:qt_book_reader/model/book.dart';
 
+import '../service/encrypter.dart';
+
 class TextView extends StatefulWidget {
   final Book book;
 
@@ -26,10 +28,14 @@ class _TextViewState extends State<TextView> {
     );
 
     if (widget.book.filePath != null) {
-      return await File(widget.book.filePath!).readAsString();
+      File file = File(widget.book.filePath!);
+      String decryptedData = EncryptService.instance
+          .decrypt(encryptedBytes: await file.readAsBytes());
+
+      return decryptedData;
     } else {
       final res = await http.get(Uri.parse(widget.book.downloadUrl));
-      Database.instance.saveBook(book: widget.book, fileData: res.bodyBytes);
+      Database.instance.saveFile(book: widget.book, fileData: res.bodyBytes);
       return res.body;
     }
   }

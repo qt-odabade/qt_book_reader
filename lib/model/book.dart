@@ -7,6 +7,7 @@ class Book extends HiveObject {
   @HiveField(0)
   final int id;
 
+  /// Title of file with extension
   @HiveField(1)
   final String title;
 
