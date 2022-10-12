@@ -58,37 +58,13 @@ class _WidgetDocViewState extends State<WidgetDocView> {
           onCreated: (DocumentViewController controller) async {
             Config config = Config();
             config.readOnly = true;
-
-            var leadingNavCancel = startLeadingNavButtonPressedListener(() {
-              // Show a dialog when leading navigation button is pressed.
-              _showMyDialog();
-            });
+            config.autoSaveEnabled = false;
+            config.documentSliderEnabled = false;
 
             await controller.openDocument(_document, config: config);
           },
         ),
       ),
-    );
-  }
-
-  Future<void> _showMyDialog() async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false, // User must tap button!
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('AlertDialog'),
-          content: const Text('Leading navigation button has been pressed.'),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
     );
   }
 }
