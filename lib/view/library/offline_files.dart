@@ -17,17 +17,19 @@ class _OfflineFilesState extends State<OfflineFiles> {
       appBar: AppBar(
         title: const Text('Offline'),
       ),
-      body: GridView.builder(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-        ),
-        itemCount: Database.instance.books.length,
-        itemBuilder: (context, index) {
-          return BookCard(
-            book: Database.instance.books[index],
-          );
-        },
-      ),
+      body: Database.instance.books.isEmpty
+          ? const Center(child: Text('No books saved'))
+          : GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+              ),
+              itemCount: Database.instance.books.length,
+              itemBuilder: (context, index) {
+                return BookCard(
+                  book: Database.instance.books[index],
+                );
+              },
+            ),
     );
   }
 }
